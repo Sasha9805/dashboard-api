@@ -19,6 +19,14 @@ const server = http.createServer((req, res) => {
 	
 });
 
-server.listen(port, host, () => {
-	console.log(`Сервер запущен на http://${host}:${port}/`);
+server.listen(() => {
+	console.log(`Сервер запущен`);
+	const address = server.address();
+	const { port: localPort, address: addr } = address;
+	console.log(`Адрес: ${addr}`);
+	console.log(`Адрес: http://localhost:${localPort}/`);
 });
+
+// server.listen(port, host, () => {
+// 	console.log(`Сервер запущен на http://${host}:${port}/`);
+// });
