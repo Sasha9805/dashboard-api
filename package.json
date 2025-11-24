@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "API для учебного проекта",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alex Pimenov",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }

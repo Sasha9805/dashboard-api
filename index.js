@@ -1,32 +1,13 @@
-import http from 'http';
+import express from 'express';
 
-const host = '127.0.0.1';
 const port = 8000;
 
-const server = http.createServer((req, res) => {
-	console.log(`Получен запрос: ${req.method} ${req.url}`);
-	switch (req.method) {
-		case 'GET':
-			switch (req.url) {
-				case '/hello':
-					res.statusCode = 200;
-					res.setHeader('Content-Type', 'text/plain');
-					res.end('Привет!');
-					break;
-			}
-			break;
-	}
-	
+const app = express();
+
+app.get('/hello', (req, res) => {
+	res.send('Привет из Express!');
 });
 
-server.listen(() => {
-	console.log(`Сервер запущен`);
-	const address = server.address();
-	const { port: localPort, address: addr } = address;
-	console.log(`Адрес: ${addr}`);
-	console.log(`Адрес: http://localhost:${localPort}/`);
+app.listen(port, () => {
+	console.log(`Express сервер запущен на http://localhost:${port}/`);
 });
-
-// server.listen(port, host, () => {
-// 	console.log(`Сервер запущен на http://${host}:${port}/`);
-// });
