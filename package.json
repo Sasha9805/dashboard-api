@@ -16,6 +16,7 @@
   "author": "Alex Pimenov",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^2.2.2",
     "express": "^5.1.0",
     "inversify": "^7.10.7",
     "reflect-metadata": "^0.2.2",

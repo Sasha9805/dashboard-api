@@ -21,6 +21,10 @@ export class App {
 		this.port = 8000;
 	}
 
+	useMiddleWare(): void {
+		this.app.use(express.json());
+	}
+
 	useRoutes(): void {
 		this.app.use('/users', this.usersController.router);
 	}
@@ -30,6 +34,7 @@ export class App {
 	}
 
 	public async init(): Promise<void> {
+		this.useMiddleWare();
 		this.useRoutes();
 		this.useExceptionFilters();
 		this.server = this.app.listen(this.port);
