@@ -3,3 +3,6 @@
 /.clinic
 file_100.mp4
 .env
+
+/generated/prisma
+/prisma/dev.db

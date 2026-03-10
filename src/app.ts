@@ -5,6 +5,7 @@ import { UsersController } from './users/users.controller';
 import { ILogger } from './logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import { IExceptionFilter } from './errors/exception.filter.interface';
+import { PrismaService } from './database/prisma.service';
 
 @injectable()
 export class App {
@@ -16,6 +17,7 @@ export class App {
 		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.IUsersController) private usersController: UsersController,
 		@inject(TYPES.IExceptionFilter) private exceptionFilter: IExceptionFilter,
+		@inject(TYPES.IPrismaService) private prismaService: PrismaService,
 	) {
 		this.app = express();
 		this.port = 8000;
@@ -37,6 +39,7 @@ export class App {
 		this.useMiddleWare();
 		this.useRoutes();
 		this.useExceptionFilters();
+		await this.prismaService.connect();
 		this.server = this.app.listen(this.port);
 		this.logger.log(`Express сервер запущен на http://localhost:${this.port}/`);
 	}
