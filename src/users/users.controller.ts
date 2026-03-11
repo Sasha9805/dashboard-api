@@ -19,7 +19,12 @@ export class UsersController extends BaseController implements IUsersController 
 	) {
 		super(loggerService);
 		this.bindRoutes([
-			{ method: 'post', path: '/login', func: this.login },
+			{
+				method: 'post',
+				path: '/login',
+				func: this.login,
+				middlewares: [new ValidateMiddleware(UserLoginDto)],
+			},
 			{
 				method: 'post',
 				path: '/register',
@@ -29,14 +34,16 @@ export class UsersController extends BaseController implements IUsersController 
 		]);
 	}
 
-	public login(
-		req: Request<unknown, unknown, UserLoginDto>,
+	public async login(
+		{ body }: Request<unknown, unknown, UserLoginDto>,
 		res: Response,
 		next: NextFunction,
-	): void {
-		console.log(req.body);
-		this.ok(res, 'login');
-		// next(new HttpError(401, 'Ошибка авторизации', 'UsersController/login'));
+	): Promise<void> {
+		const isValid = await this.userService.validateUser(body);
+		if (!isValid) {
+			return next(new HttpError(401, 'Ошибка авторизации', 'UsersController/login'));
+		}
+		this.ok(res, { email: body.email });
 	}
 
 	public async register(
