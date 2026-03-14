@@ -34,6 +34,11 @@ export class UsersController extends BaseController implements IUsersController 
 				func: this.register,
 				middlewares: [new ValidateMiddleware(UserRegisterDto)],
 			},
+			{
+				method: 'get',
+				path: '/info',
+				func: this.info,
+			},
 		]);
 	}
 
@@ -62,6 +67,14 @@ export class UsersController extends BaseController implements IUsersController 
 			);
 		}
 		this.ok(res, { email: result.email, id: result.id });
+	}
+
+	public async info(
+		{ user }: Request<unknown, unknown, UserRegisterDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		this.ok(res, { email: user?.email });
 	}
 
 	private signJWT(email: string, secret: string): Promise<string> {
