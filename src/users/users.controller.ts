@@ -10,12 +10,15 @@ import { UserRegisterDto } from './dto/user-register.dto';
 import { User } from './user.entity';
 import { IUsersService } from './users.service.interface';
 import { ValidateMiddleware } from '../common/validate.middleware';
+import { sign } from 'jsonwebtoken';
+import { IConfigService } from '../config/config.service.interface';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
 	constructor(
 		@inject(TYPES.ILogger) private loggerService: ILogger,
 		@inject(TYPES.IUsersService) private userService: IUsersService,
+		@inject(TYPES.IConfigService) private configService: IConfigService,
 	) {
 		super(loggerService);
 		this.bindRoutes([
@@ -43,7 +46,8 @@ export class UsersController extends BaseController implements IUsersController 
 		if (!isValid) {
 			return next(new HttpError(401, 'Ошибка авторизации', 'UsersController/login'));
 		}
-		this.ok(res, { email: body.email });
+		const jwt = await this.signJWT(body.email, this.configService.get('SECRET'));
+		this.ok(res, { jwt });
 	}
 
 	public async register(
@@ -58,5 +62,26 @@ export class UsersController extends BaseController implements IUsersController 
 			);
 		}
 		this.ok(res, { email: result.email, id: result.id });
+	}
+
+	private signJWT(email: string, secret: string): Promise<string> {
+		return new Promise((resolve, reject) => {
+			sign(
+				{
+					email,
+					iat: Math.floor(Date.now() / 1000),
+				},
+				secret,
+				{
+					algorithm: 'HS256',
+				},
+				(err: Error | null, token?: string) => {
+					if (err) {
+						reject(err);
+					}
+					resolve(token as string);
+				},
+			);
+		});
 	}
 }
