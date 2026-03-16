@@ -12,6 +12,7 @@ import { IUsersService } from './users.service.interface';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { sign } from 'jsonwebtoken';
 import { IConfigService } from '../config/config.service.interface';
+import { AuthGuard } from '../common/auth.guard';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
@@ -38,6 +39,7 @@ export class UsersController extends BaseController implements IUsersController 
 				method: 'get',
 				path: '/info',
 				func: this.info,
+				middlewares: [new AuthGuard()],
 			},
 		]);
 	}
@@ -74,7 +76,11 @@ export class UsersController extends BaseController implements IUsersController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		this.ok(res, { email: user?.email });
+		const userInfo = await this.userService.getUserInfo(user.email);
+		if (!userInfo) {
+			return next(new HttpError(404, 'Пользователь не найден', 'UsersController/info'));
+		}
+		this.ok(res, { id: userInfo.id, email: userInfo.email, name: userInfo.name });
 	}
 
 	private signJWT(email: string, secret: string): Promise<string> {
