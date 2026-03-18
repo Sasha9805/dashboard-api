@@ -32,12 +32,12 @@ export const appBindings = new ContainerModule(({ bind }) => {
 	bind<IConfigService>(TYPES.IConfigService).to(ConfigService).inSingletonScope();
 });
 
-function bootsrtap(): IBootstrapReturn {
+async function bootsrtap(): Promise<IBootstrapReturn> {
 	const appContainer = new Container();
 	appContainer.load(appBindings);
 	const app = appContainer.get<App>(TYPES.Application);
-	app.init();
+	await app.init();
 	return { app, appContainer };
 }
 
-export const { app, appContainer } = bootsrtap();
+export const boot = bootsrtap();
